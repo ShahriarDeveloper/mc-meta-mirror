@@ -15,6 +15,7 @@ jobs:
 
       - name: Fetch manifest
         run: |
+          mkdir -p data
           curl -s --max-time 15 \
             https://piston-meta.mojang.com/mc/game/version_manifest_v2.json \
             -o data/version_manifest_v2.json
@@ -23,7 +24,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          mkdir -p data
           git add data/
           git diff --cached --quiet || git commit -m "sync: $(date -u)"
           git push
