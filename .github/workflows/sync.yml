@@ -1,0 +1,29 @@
+name: Sync Mojang Metadata
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch manifest
+        run: |
+          curl -s --max-time 15 \
+            https://piston-meta.mojang.com/mc/game/version_manifest_v2.json \
+            -o data/version_manifest_v2.json
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          mkdir -p data
+          git add data/
+          git diff --cached --quiet || git commit -m "sync: $(date -u)"
+          git push
